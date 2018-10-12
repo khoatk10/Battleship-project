@@ -1,4 +1,3 @@
-
 using Microsoft.VisualBasic;
 using System;
 using System.Collections;
@@ -10,46 +9,63 @@ using System.Diagnostics;
 /// This is used to control the actions and view displayed to
 /// the player.
 /// </summary>
-
 public enum GameState
 {
-	/// <summary>
-	/// The player is viewing the main menu.
-	/// </summary>
+	// '' <summary>
+	// '' The player is viewing the main menu.
+	// '' </summary>
 	ViewingMainMenu,
 
-	/// <summary>
-	/// The player is viewing the game menu
-	/// </summary>
+	// '' <summary>
+	// '' The player is viewing the game menu
+	// '' </summary>
 	ViewingGameMenu,
 
-	/// <summary>
-	/// The player is looking at the high scores
-	/// </summary>
+	// '' <summary>
+	// '' The player is looking at the high scores
+	// '' </summary>
 	ViewingHighScores,
 
-	/// <summary>
-	/// The player is altering the game settings
-	/// </summary>
+
+    ViewingInformation,
+
+	// '' <summary>
+	// '' The player is altering the game settings
+	// '' </summary>
 	AlteringSettings,
 
-	/// <summary>
-	/// Players are deploying their ships
-	/// </summary>
+	// '' <summary>
+	// '' Players are deploying their ships
+	// '' </summary>
 	Deploying,
 
-	/// <summary>
-	/// Players are attempting to locate each others ships
-	/// </summary>
+    // '' <summary>
+    // '' Players are choosing background 1
+    // '' </summary>
+    Background1,
+
+    // '' <summary>
+    // '' Players are choosing background 2
+    // '' </summary>
+    Background2,
+
+    // '' <summary>
+    // '' Players are choosing background 3
+    // '' </summary>
+    Background3,
+
+	// '' <summary>
+	// '' Players are attempting to locate each others ships
+	// '' </summary>
 	Discovering,
 
-	/// <summary>
-	/// One player has won, showing the victory screen
-	/// </summary>
+	// '' <summary>
+	// '' One player has won, showing the victory screen
+	// '' </summary>
 	EndingGame,
 
-	/// <summary>
-	/// The player has quit. Show ending credits and terminate the game
-	/// </summary>
-	Quitting
+	// '' <summary>
+	// '' The player has quit. Show ending credits and terminate the game
+	// '' </summary>
+	Quitting,
 }
