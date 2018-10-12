@@ -1,80 +1,119 @@
-
-using Microsoft.VisualBasic;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-//using System.Data;
-using System.Diagnostics;
 using SwinGameSDK;
+using System;
 
-/// <summary>
-/// The battle phase is handled by the DiscoveryController.
-/// </summary>
-static class DiscoveryController
+// '' <summary>
+// '' The battle phase is handled by the DiscoveryController.
+// '' </summary>
+public static class DiscoveryController
 {
+    // '' <summary>
+    // '' Handles input during the discovery phase of the game.
+    // '' </summary>
+    // '' <remarks>
+    // '' Escape opens the game menu. Clicking the mouse will
+    // '' attack a location.
+    // '' </remarks>
+    public static void HandleDiscoveryInput()
+    {
+        if (SwinGame.KeyTyped(KeyCode.EscapeKey))
+        {
+            GameController.AddNewState(GameState.ViewingGameMenu);
+        }
 
-	/// <summary>
-	/// Handles input during the discovery phase of the game.
-	/// </summary>
-	/// <remarks>
-	/// Escape opens the game menu. Clicking the mouse will
-	/// attack a location.
-	/// </remarks>
-	public static void HandleDiscoveryInput()
-	{
-		if (SwinGame.KeyTyped(KeyCode.vk_ESCAPE)) {
-			GameController.AddNewState(GameState.ViewingGameMenu);
-		}
+        ///////////////// Changes Background to Menu background
+        if (SwinGame.KeyTyped(KeyCode.KeyPad1))
+        {
+            GameController.AddNewState(GameState.Background1);
+        }
 
-		if (SwinGame.MouseClicked(MouseButton.LeftButton)) {
-			DoAttack();
-		}
-	}
+        if (SwinGame.KeyTyped(KeyCode.KeyPad2))
+        {
+            GameController.AddNewState(GameState.Background2);
+        }
 
-	/// <summary>
-	/// Attack the location that the mouse if over.
-	/// </summary>
-	private static void DoAttack()
-	{
-		Point2D mouse = default(Point2D);
+        if (SwinGame.KeyTyped(KeyCode.KeyPad3))
+        {
+            GameController.AddNewState(GameState.Background3);
+        }
 
-		mouse = SwinGame.MousePosition();
+        if (SwinGame.MouseClicked(MouseButton.LeftButton))
+        {
+            DoAttack();
+        }
 
-		//Calculate the row/col clicked
-		int row = 0;
-		int col = 0;
-		row = Convert.ToInt32(Math.Floor((mouse.Y - UtilityFunctions.FIELD_TOP) / (UtilityFunctions.CELL_HEIGHT + UtilityFunctions.CELL_GAP)));
-		col = Convert.ToInt32(Math.Floor((mouse.X - UtilityFunctions.FIELD_LEFT) / (UtilityFunctions.CELL_WIDTH + UtilityFunctions.CELL_GAP)));
+        Point2D mouse = SwinGame.MousePosition();
+        ///////////////// Check when pressing "R" button on image it resets the human player and the computer player
+        if (SwinGame.MouseClicked(MouseButton.LeftButton) && mouse.X > UtilityFunctions.FIELD_LEFT + 340 && mouse.Y > UtilityFunctions.FIELD_TOP - 50 && mouse.X < UtilityFunctions.FIELD_LEFT + 340 + 80 && mouse.Y < UtilityFunctions.FIELD_TOP - 50 + 46)
+        {
+            GameController.HumanPlayer.Reset();
+            GameController.ComputerPlayer.Reset();
+        }
 
-		if (row >= 0 & row < GameController.HumanPlayer.EnemyGrid.Height) {
-			if (col >= 0 & col < GameController.HumanPlayer.EnemyGrid.Width) {
-				GameController.Attack(row, col);
-			}
-		}
-	}
+        // Check when pressing "R" it reset the human player and the computer player
+        if (SwinGame.KeyDown(KeyCode.RKey))
+        {
+            GameController.HumanPlayer.Reset();
+            GameController.ComputerPlayer.Reset();
+        }
+    }
 
-	/// <summary>
-	/// Draws the game during the attack phase.
-	/// </summary>s
-	public static void DrawDiscovery()
-	{
-		const int SCORES_LEFT = 172;
-		const int SHOTS_TOP = 157;
-		const int HITS_TOP = 206;
-		const int SPLASH_TOP = 256;
+    // '' <summary>
+    // '' Attack the location that the mouse if over.
+    // '' </summary>
+    private static void DoAttack()
+    {
+        // Calculate the row/col clicked
+        Point2D mouse = SwinGame.MousePosition();
+        int row = Convert.ToInt32(Math.Floor(((mouse.Y - UtilityFunctions.FIELD_TOP) / (UtilityFunctions.CELL_HEIGHT + UtilityFunctions.CELL_GAP))));
+        int col = Convert.ToInt32(Math.Floor(((mouse.X - UtilityFunctions.FIELD_LEFT) / (UtilityFunctions.CELL_WIDTH + UtilityFunctions.CELL_GAP))));
 
-		if ((SwinGame.KeyDown(KeyCode.vk_LSHIFT) | SwinGame.KeyDown(KeyCode.vk_RSHIFT)) & SwinGame.KeyDown(KeyCode.vk_c)) {
-			UtilityFunctions.DrawField(GameController.HumanPlayer.EnemyGrid, GameController.ComputerPlayer, true);
-		} else {
-			UtilityFunctions.DrawField(GameController.HumanPlayer.EnemyGrid, GameController.ComputerPlayer, false);
-		}
+        if (row >= 0 && row < GameController.HumanPlayer.EnemyGrid.Height)
+        {
+            if (col >= 0 && col < GameController.HumanPlayer.EnemyGrid.Width)
+            {
+                GameController.Attack(row, col);
+            }
+        }
+    }
 
-		UtilityFunctions.DrawSmallField(GameController.HumanPlayer.PlayerGrid, GameController.HumanPlayer);
-		UtilityFunctions.DrawMessage();
+    // '' <summary>
+    // '' Draws the game during the attack phase.
+    // '' </summary>s
+    public static void DrawDiscovery()
+    {
+        //drawing support
+        const int SCORES_LEFT = 172;
+        const int SHOTS_TOP = 157;
+        const int HITS_TOP = 206;
+        const int SPLASH_TOP = 256;
 
-		SwinGame.DrawText(GameController.HumanPlayer.Shots.ToString(), Color.White, GameResources.GameFont("Menu"), SCORES_LEFT, SHOTS_TOP);
-		SwinGame.DrawText(GameController.HumanPlayer.Hits.ToString(), Color.White, GameResources.GameFont("Menu"), SCORES_LEFT, HITS_TOP);
-		SwinGame.DrawText(GameController.HumanPlayer.Missed.ToString(), Color.White, GameResources.GameFont("Menu"), SCORES_LEFT, SPLASH_TOP);
-	}
+        // Check when "Left Shift" or "Right Shift" and "C" are pressed so it draws the field
+        if ((SwinGame.KeyDown(KeyCode.LeftShiftKey) || SwinGame.KeyDown(KeyCode.RightShiftKey)) && SwinGame.KeyDown(KeyCode.CKey))
+        {
+            UtilityFunctions.DrawField(GameController.HumanPlayer.EnemyGrid, GameController.ComputerPlayer, true);
+        }
+        else
+        {
+            UtilityFunctions.DrawField(GameController.HumanPlayer.EnemyGrid, GameController.ComputerPlayer, false);
+        }
 
+        bool isHuman = (GameController.Game.Player == GameController.HumanPlayer);
+        if (isHuman)
+        {
+            SwinGame.DrawText("Your Turn", Color.White, GameResources.GameFont("Courier"), UtilityFunctions.FIELD_LEFT, UtilityFunctions.FIELD_TOP - 30);
+        }
+        else
+        {
+            SwinGame.DrawText("AI Turn", Color.White, GameResources.GameFont("Courier"), UtilityFunctions.FIELD_LEFT, UtilityFunctions.FIELD_TOP - 30);
+        }
+
+        ///////////////// Draws the reset button
+        SwinGame.DrawBitmap(GameResources.GameImage("ResetButton"), UtilityFunctions.FIELD_LEFT + 340, UtilityFunctions.FIELD_TOP - 50);
+
+        UtilityFunctions.DrawSmallField(GameController.HumanPlayer.PlayerGrid, GameController.HumanPlayer);
+        UtilityFunctions.DrawMessage();
+        SwinGame.DrawText(GameController.HumanPlayer.Shots.ToString(), Color.White, GameResources.GameFont("Menu"), SCORES_LEFT, SHOTS_TOP);
+        SwinGame.DrawText(GameController.HumanPlayer.Hits.ToString(), Color.White, GameResources.GameFont("Menu"), SCORES_LEFT, HITS_TOP);
+        SwinGame.DrawText(GameController.HumanPlayer.Missed.ToString(), Color.White, GameResources.GameFont("Menu"), SCORES_LEFT, SPLASH_TOP);
+    }
 }
